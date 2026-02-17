@@ -1,403 +1,1819 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-    <meta http-equiv="Content-Security-Policy" content="default-src * filesystem: data: gap: http://www.google-analytics.com http://www.googletagmanager.com http://ssl.gstatic.com http://csvjson.s3.amazonaws.com http://csvjson.s3.us-east-2.amazonaws.com 'unsafe-eval' 'unsafe-inline'; media-src *; img-src * data:">
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<link href="/img/favicon.ico" rel="shortcut icon" type="image/x-icon">
-
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-		<title>CSV to JSON - CSVJSON</title>
-		<meta name="description" content="Online tool for converting CSV to JSON. Convert Excel to JSON. Transpose data. Output array or hash.">
-
-		<script type="text/javascript">
-			window.APP = {
-				page: "csv2json",
-				run: true,
-				version: 0.318,
-				id: null,
-				data: null,
-				data_url: null			};
-		</script>
-
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-		<link rel="stylesheet"
-      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
-			<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
-
-		<link href="/js/3rd/jQuery-File-Upload/css/jquery.fileupload.css" rel="stylesheet" type="text/css" charset="utf-8" />
-		<link rel="stylesheet" href="https://use.typekit.net/dkv2ioo.css">
-
-		
-								<link href="/css/csvjson.css?v=0.318" rel="stylesheet" type="text/css" charset="utf-8" />
-									<script src="/js/3rd.min.js?v=0.318" type="text/javascript"></script>
-									<script src="/js/csvjson.min.js?v=0.318" type="text/javascript"></script>
-									<script src="/js/app.min.js?v=0.318" type="text/javascript"></script>
-			
-		
-		
-		<script>
-			!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t,e){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.1.0";
-				analytics.load("mVmXAtABgYVqPdbXw1a4Y19vcesa1cec");
-				analytics.page();
-			}}();
-
-			analytics.ready(function(){
-				var flatfileLinks = $('a[href*="flatfile.com"]');
-
-				flatfileLinks.each(function(){
-					var bareURL = $(this).attr('href')
-					$(this).attr('href', bareURL + '&ajs_event=came_from_csvjson&ajs_prop_ccf_id=' + window.analytics.user().anonymousId())
-				})
-
-				analytics.trackLink(flatfileLinks, 'Clicked Flatfile Link');
-			})
-	</script>
-	<!-- Global site tag (gtag.js) - Google Ads: 831825021 -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=AW-831825021"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'AW-831825021');
-	</script>
-</head>
-<body>
-		<section class="obviousBanner" aria-labelledby="obvious-title">
-			<div class="obviousInner">
-				<img
-					class="obLogo"
-					src="img/obvious-logo.svg"
-					alt="Obvious"
-					width="160"
-					height="40"
-					decoding="async"
-				/>
-
-				<h2 id="obvious-title" class="obTitle">
-					The successor to csvjson is here:
-					<span class="obTitle--sub">an AI agent that can convert your data to and from any format, securely.</span>
-				</h2>
-
-				<a class="obBtn" href="https://preview.obvious.ai/accept-invite?invite=Blcih4a7cPPTv2GWsypqpuz1UtEWYN3lkFVvCds7" aria-label="Try Obvious now">
-					Try it now
-				</a>
-
-				<img
-					class="btmImg"
-					src="img/obvious-illustration.png"
-					alt=""
-					width="950"
-					height="600"
-					loading="lazy"
-					decoding="async"
-				/>
-			</div>
-		</section>
-
-		<header class="px-4 py-4 border-bottom bg-light">
-	    <div class="container d-flex flex-wrap justify-content-left pt-2 pb-2">
-					<div class="d-flex align-items-center me-lg-auto text-decoration-none">
-								<a href="/" class="d-flex align-items-center me-lg-auto text-decoration-none">
-									<img src="img/logo_bg-light.svg" width="140">
-								</a>
-							</div>
-
-							<a class="btn d-none d-sm-block" href="https://flatfile.com/get-started?utm_source=csvjson&utm_medium=owned_site&utm_campaign=q1-2022-csvjson-redesign">
-								<img src="img/flatfile-jewel.svg" width="20" style="margin:-2px 5px 0 0px"/>
-								<b>Turnkey CSV Importer</b> &bull; <small>Installs in minutes</small>
-							</a>
-			</div>
-  	</header>
-					<header class="px-4 border-bottom">
-				<div class="container d-flex flex-wrap justify-content-left pt-3 pb-1">
-					<div class="row">
-						<div class="col-md-12">
-							<nav aria-label="breadcrumb">
-								<ol class="breadcrumb">
-									<li class="breadcrumb-item"><a href="/">Home</a></li>
-									<li class="breadcrumb-item active" aria-current="page">
-
-										<div class="dropdown d-flex align-items-center me-lg-auto text-decoration-none">
-													<a href="#" class="d-flex align-items-center me-lg-auto text-decoration-none dropdown-toggle" id="dropdownNavLink" data-bs-toggle="dropdown" aria-expanded="false">
-														csv2json													</a>
-													<ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownNavLink" style="">
-														<li><a class="dropdown-item active" href="/csv2json">CSV to JSON</a></li>
-														<li><a class="dropdown-item " href="/json2csv">JSON to CSV</a></li>
-														<li><a class="dropdown-item " href="/sql2json">SQL to JSON</a></li>
-														<li><a class="dropdown-item " href="/csvjson2json">CSVJSON to JSON</a></li>
-														<li><hr class="dropdown-divider"></li>
-														<li><a class="dropdown-item " href="/json_validator">JSON Validator</a></li>
-														<li><a class="dropdown-item " href="/json_beautifier">JSON Beautifier</a></li>
-														<!--<li><a class="dropdown-item" href="/datajanitor">Data Janitor</a></li>-->
-														<li><hr class="dropdown-divider"></li>
-														<li><a class="dropdown-item" href="https://flatfile.com/get-started?utm_source=csvjson&utm_medium=owned_site&utm_campaign=q1-2022-csvjson-redesign">Upgrade to Flatfile</a></li>
-													</ul>
-												</div>
-									</li>
-								</ol>
-							</nav>
-						</div>
-					</div>
-				</div>
-			</header>
-		
-		<div class="container px-4 py-5">
-	<div class="row">
-		<div class="description col-md-12">
-			<h1 class="text-primary fw-bold">CSV or TSV <small class="bi bi-chevron-right"></small>JSON</h1>
-			<p>To get started, upload or paste your data from Excel (saved as CSV or TSV).
-		</div>
-	</div>
-
-	<div class="row gx-5">
-		<div class="col-md-5 mb-5">
-			<div class="mb-5">
-				<label for="fileupload" class="form-label">Upload a CSV file</label>
-				<input id="fileupload" type="file" name="file" class="form-control"/>
-			</div>
-			<div class="mb-3">
-				<label for="csv" class="form-label">Or paste your CSV here</label>
-<textarea id="csv" class="form-control input save" rows="18" spellcheck="false">
-album, year, US_peak_chart_post
-The White Stripes, 1999, -
-De Stijl, 2000, -
-White Blood Cells, 2001, 61
-Elephant, 2003, 6
-Get Behind Me Satan, 2005, 3
-Icky Thump, 2007, 2
-Under Great White Northern Lights, 2010, 11
-Live in Mississippi, 2011, -
-Live at the Gold Dollar, 2012, -
-Nine Miles from the White City, 2013, -
-</textarea>
-			</div>
-			<button id="convert" type="submit" class="btn btn-primary mb-2 me-2">
-				<i class="bi bi-chevron-right"></i> Convert
-			</button>
-			<button id="clear" type="submit" class="btn btn-light mb-2 me-2">
-				<i class="bi bi-backspace"></i> Clear
-			</button>
-		</div>
-
-		<div class="col-md-7 more-bottom-margin">
-			<div class="mb-3">
-				<div class="form-check-inline">
-					<label class="form-label me-2 save" title="Choose your separator">
-						<div class="mb-2">Separator</div>
-						<select class="form-select" id="separator" name="separator">
-							<option value="auto" selected="selected">Auto-detect</option>
-							<option value="comma">Comma</option>
-							<option value="semiColon">Semi-colon</option>
-							<option value="tab">Tab</option>
-						</select>
-					</label>
-				</div>
-				<div class="form-check-inline">
-					<input type="checkbox" id="parseNumbers" name="parseNumbers" class="form-check-input save" checked="checked "/>
-					<label for="parseNumbers" class="form-check-label" title="Check to parse numbers (i.e. '7e2' would become 700). Uncheck to keep original formatted numbers as strings.">
-						 Parse numbers
-					</label>
-				</div>
-				<div class="form-check-inline">
-					<input type="checkbox" id="parseJSON" name="parseJSON" class="form-check-input save" checked="checked "/>
-					<label for="parseJSON" class="form-check-label" title="Check to parse potential values as JSON (numbers, null, false, true, [] and {}). Uncheck to keep original values as strings.">
-						 Parse JSON
-					</label>
-				</div>
-				<div class="form-check-inline">
-					<input type="checkbox" id="transpose" name="transpose" class="form-check-input save" />
-					<label for="transpose" class="form-check-label" title="Transpose the data beforehand.">
-						 Transpose
-					</label>
-				</div>
-				<br/>
-				<div class="form-check-inline">
-					<label class="form-check-label me-2">Output:</label>
-					<input type="radio" id="output-array" name="output" class="form-check-input save" value="array" checked="checked" />
-					<label for="output-array" class="form-check-label" title="Output an array of objects.">
-						Array
-					</label>
-				</div>
-				<div class="form-check-inline">
-					<input type="radio" id="output-hash" name="output" class="form-check-input save" value="hash" />
-					<label for="output-hash" class="form-check-label" title="Output an object instead of an array. First column is used as hash key.">
-						Hash
-					</label>
-				</div>
-				<div class="form-check-inline">
-					<input type="checkbox" id="minify" name="minify" class="form-check-input save" />
-					<label for="minify" class="form-check-label" title="Minify or compact result by removing spaces and new lines.">
-						 Minify
-					</label>
-				</div>
-			</div>
-			<div class="mb-3">
-  <label class="form-label">JSON</label> <span class="result-note"></span>
-  <textarea id="result" class="form-control result save" rows="18" spellcheck="false" disabled></textarea>
-</div>
-<a id="download" class="btn btn-primary mb-2 me-2" href="" download="csvjson.json" disabled="disabled" target="_self">
-  <i class="bi bi-cloud-download"></i> Download
-</a>
-<a id="copy" class="btn btn-light mb-2 me-2" href="#" title="or Ctrl + A then Ctrl + C to copy to clipboard."><i class="bi bi-share"></i> Copy to clipboard</a>
-		</div>
-	</div>
-</div>
-
-
-
-<div class="container px-4 py-5" id="about-flatfile">
-
-	<h2 class="pb-2 border-bottom">Need help cleaning data?</h2>
-
-	<div class="row row-cols-1 row-cols-sm-1 row-cols-md-12 row-cols-lg-12 g-4 py-3">
-	  <div class="col d-flex align-items-start">
-	    <div>
-				<p>
-					Embed all the functionality of csv<strong>json</strong> in any web application with <a href="https://flatfile.com/get-started?utm_source=csvjson&amp;utm_medium=owned_site&amp;utm_campaign=q1-2022-csvjson-redesign">Flatfile</a>. Auto-match columns, validate data fields, and provide an intuitive CSV import experience.
-				</p>
-			</div>
-		</div>
-	</div>
-
-</div>
-
-<div class="container px-4 py-5" id="about-csvjson">
-
-  <h2 class="pb-2 border-bottom">More Details</h2>
-
-  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-12 row-cols-lg-12 g-4 py-3">
-    <div class="col d-flex align-items-start">
-      <div>
-					<ul>
-						<li>
-							This function is available as a <a href="https://www.npmjs.com/package/csvjson-csv2json" target="_blank">npm package</a>
-						</li>
-						<li>
-							CSV stands for <a href="http://en.wikipedia.org/wiki/Comma-separated_values" target="_blank">Comma Separated Values</a>.
-							Often used as an interchange data format to represent table records, one per line. CSV is plain text.
-						</li>
-						<li>
-							The CSV format is documented in an RFC memo <a href="https://tools.ietf.org/html/rfc4180" target="_blank">RFC-4180</a>.
-						</li>
-						<li>
-							The first line is often the header, or column names. Each subsequent row is a record and should have the same number of fields.
-						</li>
-						<li>
-							Fields containing the separator character, line breaks and double-quotes must be enclosed inside double quotes <code>"</code>.
-						</li>
-						<li>
-							Other separator are often used like tabs <code>\t</code>or semi-colons <code>;</code>.
-							TSV or Tab Separated Values is used to store table data in Clipboards.
-							When data is copied from Excel for example, it is stored as TSV in the Clipboard.
-						</li>
-						<li>
-							With CSVJSON you can parse values as numbers or JSON. Turn on respective <strong>Parse Numbers</strong> and <strong>Parse JSON</strong> switches to convert valid numbers and JSON (null, false, true, [] and {}).
-						</li>
-						<li>
-							With CSVJSON you can transpose the csv before conversion. Rows become columns, and columns become rows.
-						</li>
-						<li>
-							With CSVJSON you can output a hash (or object) instead of an array. In that case, the hash key will be the first column.
-						</li>
-					</ul>
-					<p>
-						<a class="btn btn-light" data-bs-toggle="collapse" href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseExample">
-							View Change Log
-						</a>
-					</p>
-      </div>
-    </div>
-
-
-		<div id="collapseOne" class="accordion-collapse collapse showclass row row-cols-1 row-cols-sm-1 row-cols-md-12 row-cols-lg-12 g-4">
-			    <div class="col d-flex align-items-start">
-						<div>
-								<h5>Mar 20, 2019</h5><p> Bug fix: Detect duplicate column headers and make them unique. <a href="https://github.com/FlatFilers/csvjson-app/issues/71">GitHub issue #71</a>.</p>
-								<h5>Feb 2, 2019</h5><p> Refactored and published <a href="https://www.npmjs.com/package/csvjson-csv2json" target="_blank">npm package csv2json</a>. Fix for <a href="https://github.com/FlatFilers/csvjson-app/issues/70">GitHub issue #70</a>.</p>
-								<h5>Jan 26, 2019</h5><p> Improvement: Removed 64k limit on download button. Also fixed issue #68 'Cannot work functional with special letters'.</p>
-								<h5>Mar 31, 2018</h5><p> Improvement: Added option to parse JSON values.</p>
-								<h5>Dec 18, 2017</h5><p> Improvement: Added option to minify or compact JSON. <a href="https://github.com/FlatFilers/csvjson-app/issues/21">GitHub issue #21</a></p>
-								<h5>Oct 7, 2016</h5><p> Improvement: Added option to parse number values or not to retain original number formatting. <a href="https://github.com/FlatFilers/csvjson-app/issues/13">GitHub issue #13</a></p>
-								<h5>Jul 09, 2016</h5><p> Fixed bug : If no text is present in a csv field, it was assigned 0 (zero) by default.</p>
-								<h5>Jun 20, 2016</h5><p> Bug fix: strings containing quotes and commas were prematurely cut.</p>
-								<h5>Dec 30, 2015</h5><p> Bug fix: drop quotes on keys of nested objects.</p>
-								<h5>Nov 26, 2015</h5><p> Improvement: Added options to transpose and output object instead of array.</p>
-								<h5>Jan 30, 2014</h5><p> Bug fix: Pasting Excel data into Textarea would cause an upload.</p>
-								<h5>Jan 12, 2014</h5><p> Initial release.</p>
-						</div>
-
-			      </div>
-			    </div>
-
-  </div>
-
-</div>
-
-		<footer class="bd-footer px-3 py-5 mt-5 bg-light">
-  		<div class="container py-5">
-		    <div class="row">
-		      <div class="col-lg-3 mb-3">
-		        <a class="d-inline-flex align-items-center mb-2 link-dark text-decoration-none" href="/" aria-label="Bootstrap">
-							<img src="./img/logo_bg-light.svg" width="140">
-		        </a>
-		        <ul class="list-unstyled small text-muted">
-		          <li class="mb-2">Rage designed and built with love by the <a href="https://flatfile.com/get-started?utm_source=csvjson&utm_medium=owned_site&utm_campaign=q1-2022-csvjson-redesign">Flatfile team</a> with the help of <a href="https://github.com/FlatFilers/csvjson-app/graphs/contributors">our contributors</a>.</li>
-		        </ul>
-		      </div>
-		      <div class="col-sm-6 col-xs-12 col-lg-3 mb-3">
-		        <h5>Convert</h5>
-		        <ul class="list-unstyled">
-		          <li class="mb-2"><a href="/csv2json">CSV to JSON</a></li>
-		          <li class="mb-2"><a href="/json2csv">JSON to CSV</a></li>
-							<li class="mb-2"><a href="/sql2json">SQL to JSON</a></li>
-							<li class="mb-2"><a href="/csvjson2json">CSVJSON to JSON</a></li>
-		        </ul>
-		      </div>
-					<div class="col-sm-6 col-xs-12 col-lg-3 mb-3">
-		        <h5>Validate & Transform</h5>
-		        <ul class="list-unstyled">
-		          <li class="mb-2"><a href="/json_validator">JSON Validator</a></li>
-		          <li class="mb-2"><a href="/json_beautifier">JSON Beautifier</a></li>
-							<!--<li class="mb-2"><a href="/datajanitor">Data Janitor</a></li>-->
-						</ul>
-		      </div>
-		      <div class="col-xs-12 col-sm-6 col-lg-3 mb-3">
-		        <h5>Community</h5>
-		        <ul class="list-unstyled">
-							<li class="mb-2"><a href="https://github.com/FlatFilers/csvjson-app/">Github</a></li>
-							<li class="mb-2"><a href="https://github.com/FlatFilers/csvjson-app/issues?q=is%3Aissue+is%3Aclosed">Change Log</a></li>
-		          <li class="mb-2"><a href="https://github.com/FlatFilers/csvjson-app/issues/new">Issues</a></li>
-		          <li class="mb-2"><a href="https://github.com/FlatFilers/csvjson-app#readme">Docs</a></li>
-		          <li class="mb-2"><a href="https://flatfile.com/get-started?utm_source=csvjson&utm_medium=owned_site&utm_campaign=q1-2022-csvjson-redesign">Corporate sponsor</a></li>
-		        </ul>
-		      </div>
-		    </div>
-  		</div>
-		</footer>
-
-		<script type="text/javascript">
-			_linkedin_partner_id = "686353";
-			window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
-			window._linkedin_data_partner_ids.push(_linkedin_partner_id);
-			</script><script type="text/javascript">
-			(function(l) {
-			if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
-			window.lintrk.q=[]}
-			var s = document.getElementsByTagName("script")[0];
-			var b = document.createElement("script");
-			b.type = "text/javascript";b.async = true;
-			b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
-			s.parentNode.insertBefore(b, s);})(window.lintrk);
-		</script>
-		<noscript>
-			<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=686353&fmt=gif" />
-		</noscript>
-
-	</body>
-</html>
+[
+ {
+   "RegionID": 394347,
+   "SizeRank": 9,
+   "RegionName": "Atlanta, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1434,
+   "2020-02-29": 1443,
+   "2020-03-31": 1456,
+   "2020-04-30": 1466,
+   "2020-05-31": 1477,
+   "2020-06-30": 1489,
+   "2020-07-31": 1504,
+   "2020-08-31": 1521,
+   "2020-09-30": 1536,
+   "2020-10-31": 1550,
+   "2020-11-30": 1560,
+   "2020-12-31": 1571,
+   "2021-01-31": 1585,
+   "2021-02-28": 1604,
+   "2021-03-31": 1627,
+   "2021-04-30": 1653,
+   "2021-05-31": 1679,
+   "2021-06-30": 1709,
+   "2021-07-31": 1734,
+   "2021-08-31": 1766,
+   "2021-09-30": 1790,
+   "2021-10-31": 1813,
+   "2021-11-30": 1824,
+   "2021-12-31": 1831,
+   "2022-01-31": 1838,
+   "2022-02-28": 1848,
+   "2022-03-31": 1863,
+   "2022-04-30": 1878,
+   "2022-05-31": 1897,
+   "2022-06-30": 1919,
+   "2022-07-31": 1944,
+   "2022-08-31": 1962,
+   "2022-09-30": 1972,
+   "2022-10-31": 1975,
+   "2022-11-30": 1973,
+   "2022-12-31": 1981,
+   "2023-01-31": 1981,
+   "2023-02-28": 1988,
+   "2023-03-31": 1993,
+   "2023-04-30": 2001,
+   "2023-05-31": 2009,
+   "2023-06-30": 2014,
+   "2023-07-31": 2022,
+   "2023-08-31": 2028,
+   "2023-09-30": 2031,
+   "2023-10-31": 2024,
+   "2023-11-30": 2016,
+   "2023-12-31": 2015,
+   "2024-01-31": 2029,
+   "2024-02-29": 2050,
+   "2024-03-31": 2065,
+   "2024-04-30": 2072,
+   "2024-05-31": 2074,
+   "2024-06-30": 2083,
+   "2024-07-31": 2092,
+   "2024-08-31": 2102,
+   "2024-09-30": 2100,
+   "2024-10-31": 2098,
+   "2024-11-30": 2097,
+   "2024-12-31": 2102,
+   "2025-01-31": 2111,
+   "2025-02-28": 2128,
+   "2025-03-31": 2138,
+   "2025-04-30": 2150,
+   "2025-05-31": 2153,
+   "2025-06-30": 2160,
+   "2025-07-31": 2166,
+   "2025-08-31": 2174,
+   "2025-09-30": 2180,
+   "2025-10-31": 2176,
+   "2025-11-30": 2170,
+   "2025-12-31": 2165
+ },
+ {
+   "RegionID": 394352,
+   "SizeRank": 96,
+   "RegionName": "Augusta, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1087,
+   "2020-02-29": 1089,
+   "2020-03-31": 1100,
+   "2020-04-30": 1102,
+   "2020-05-31": 1112,
+   "2020-06-30": 1120,
+   "2020-07-31": 1136,
+   "2020-08-31": 1151,
+   "2020-09-30": 1163,
+   "2020-10-31": 1170,
+   "2020-11-30": 1170,
+   "2020-12-31": 1175,
+   "2021-01-31": 1176,
+   "2021-02-28": 1191,
+   "2021-03-31": 1206,
+   "2021-04-30": 1231,
+   "2021-05-31": 1245,
+   "2021-06-30": 1263,
+   "2021-07-31": 1278,
+   "2021-08-31": 1300,
+   "2021-09-30": 1312,
+   "2021-10-31": 1327,
+   "2021-11-30": 1332,
+   "2021-12-31": 1335,
+   "2022-01-31": 1336,
+   "2022-02-28": 1354,
+   "2022-03-31": 1373,
+   "2022-04-30": 1383,
+   "2022-05-31": 1385,
+   "2022-06-30": 1394,
+   "2022-07-31": 1408,
+   "2022-08-31": 1418,
+   "2022-09-30": 1419,
+   "2022-10-31": 1415,
+   "2022-11-30": 1423,
+   "2022-12-31": 1435,
+   "2023-01-31": 1451,
+   "2023-02-28": 1456,
+   "2023-03-31": 1457,
+   "2023-04-30": 1470,
+   "2023-05-31": 1486,
+   "2023-06-30": 1503,
+   "2023-07-31": 1511,
+   "2023-08-31": 1513,
+   "2023-09-30": 1522,
+   "2023-10-31": 1518,
+   "2023-11-30": 1518,
+   "2023-12-31": 1516,
+   "2024-01-31": 1510,
+   "2024-02-29": 1514,
+   "2024-03-31": 1518,
+   "2024-04-30": 1543,
+   "2024-05-31": 1555,
+   "2024-06-30": 1567,
+   "2024-07-31": 1569,
+   "2024-08-31": 1572,
+   "2024-09-30": 1575,
+   "2024-10-31": 1589,
+   "2024-11-30": 1601,
+   "2024-12-31": 1604,
+   "2025-01-31": 1600,
+   "2025-02-28": 1607,
+   "2025-03-31": 1623,
+   "2025-04-30": 1648,
+   "2025-05-31": 1661,
+   "2025-06-30": 1664,
+   "2025-07-31": 1657,
+   "2025-08-31": 1663,
+   "2025-09-30": 1669,
+   "2025-10-31": 1666,
+   "2025-11-30": 1652,
+   "2025-12-31": 1646
+ },
+ {
+   "RegionID": 395070,
+   "SizeRank": 138,
+   "RegionName": "Savannah, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1325,
+   "2020-02-29": 1337,
+   "2020-03-31": 1349,
+   "2020-04-30": 1356,
+   "2020-05-31": 1350,
+   "2020-06-30": 1348,
+   "2020-07-31": 1359,
+   "2020-08-31": 1376,
+   "2020-09-30": 1389,
+   "2020-10-31": 1392,
+   "2020-11-30": 1397,
+   "2020-12-31": 1401,
+   "2021-01-31": 1402,
+   "2021-02-28": 1414,
+   "2021-03-31": 1425,
+   "2021-04-30": 1459,
+   "2021-05-31": 1481,
+   "2021-06-30": 1517,
+   "2021-07-31": 1537,
+   "2021-08-31": 1575,
+   "2021-09-30": 1603,
+   "2021-10-31": 1623,
+   "2021-11-30": 1623,
+   "2021-12-31": 1634,
+   "2022-01-31": 1641,
+   "2022-02-28": 1667,
+   "2022-03-31": 1702,
+   "2022-04-30": 1741,
+   "2022-05-31": 1756,
+   "2022-06-30": 1772,
+   "2022-07-31": 1802,
+   "2022-08-31": 1830,
+   "2022-09-30": 1844,
+   "2022-10-31": 1852,
+   "2022-11-30": 1876,
+   "2022-12-31": 1894,
+   "2023-01-31": 1900,
+   "2023-02-28": 1911,
+   "2023-03-31": 1915,
+   "2023-04-30": 1934,
+   "2023-05-31": 1939,
+   "2023-06-30": 1958,
+   "2023-07-31": 1968,
+   "2023-08-31": 1993,
+   "2023-09-30": 1991,
+   "2023-10-31": 1982,
+   "2023-11-30": 1981,
+   "2023-12-31": 2003,
+   "2024-01-31": 2026,
+   "2024-02-29": 2036,
+   "2024-03-31": 2053,
+   "2024-04-30": 2070,
+   "2024-05-31": 2085,
+   "2024-06-30": 2088,
+   "2024-07-31": 2109,
+   "2024-08-31": 2112,
+   "2024-09-30": 2113,
+   "2024-10-31": 2093,
+   "2024-11-30": 2087,
+   "2024-12-31": 2088,
+   "2025-01-31": 2092,
+   "2025-02-28": 2102,
+   "2025-03-31": 2107,
+   "2025-04-30": 2131,
+   "2025-05-31": 2141,
+   "2025-06-30": 2158,
+   "2025-07-31": 2147,
+   "2025-08-31": 2140,
+   "2025-09-30": 2126,
+   "2025-10-31": 2118,
+   "2025-11-30": 2125,
+   "2025-12-31": 2127
+ },
+ {
+   "RegionID": 394488,
+   "SizeRank": 158,
+   "RegionName": "Columbus, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 870,
+   "2020-02-29": 877,
+   "2020-03-31": 880,
+   "2020-04-30": 895,
+   "2020-05-31": 907,
+   "2020-06-30": 927,
+   "2020-07-31": 937,
+   "2020-08-31": 945,
+   "2020-09-30": 938,
+   "2020-10-31": 947,
+   "2020-11-30": 948,
+   "2020-12-31": 956,
+   "2021-01-31": 955,
+   "2021-02-28": 970,
+   "2021-03-31": 972,
+   "2021-04-30": 983,
+   "2021-05-31": 992,
+   "2021-06-30": 1013,
+   "2021-07-31": 1026,
+   "2021-08-31": 1054,
+   "2021-09-30": 1086,
+   "2021-10-31": 1112,
+   "2021-11-30": 1113,
+   "2021-12-31": 1112,
+   "2022-01-31": 1110,
+   "2022-02-28": 1105,
+   "2022-03-31": 1099,
+   "2022-04-30": 1116,
+   "2022-05-31": 1137,
+   "2022-06-30": 1158,
+   "2022-07-31": 1163,
+   "2022-08-31": 1154,
+   "2022-09-30": 1170,
+   "2022-10-31": 1163,
+   "2022-11-30": 1160,
+   "2022-12-31": 1143,
+   "2023-01-31": 1150,
+   "2023-02-28": 1161,
+   "2023-03-31": 1157,
+   "2023-04-30": 1156,
+   "2023-05-31": 1151,
+   "2023-06-30": 1160,
+   "2023-07-31": 1183,
+   "2023-08-31": 1203,
+   "2023-09-30": 1210,
+   "2023-10-31": 1201,
+   "2023-11-30": 1198,
+   "2023-12-31": 1200,
+   "2024-01-31": 1211,
+   "2024-02-29": 1231,
+   "2024-03-31": 1247,
+   "2024-04-30": 1249,
+   "2024-05-31": 1241,
+   "2024-06-30": 1246,
+   "2024-07-31": 1249,
+   "2024-08-31": 1256,
+   "2024-09-30": 1250,
+   "2024-10-31": 1245,
+   "2024-11-30": 1241,
+   "2024-12-31": 1247,
+   "2025-01-31": 1262,
+   "2025-02-28": 1272,
+   "2025-03-31": 1296,
+   "2025-04-30": 1312,
+   "2025-05-31": 1334,
+   "2025-06-30": 1330,
+   "2025-07-31": 1325,
+   "2025-08-31": 1317,
+   "2025-09-30": 1332,
+   "2025-10-31": 1342,
+   "2025-11-30": 1351,
+   "2025-12-31": 1350
+ },
+ {
+   "RegionID": 394813,
+   "SizeRank": 200,
+   "RegionName": "Macon, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 812,
+   "2020-02-29": 834,
+   "2020-03-31": 849,
+   "2020-04-30": 855,
+   "2020-05-31": 853,
+   "2020-06-30": 846,
+   "2020-07-31": 872,
+   "2020-08-31": 893,
+   "2020-09-30": 914,
+   "2020-10-31": 909,
+   "2020-11-30": 899,
+   "2020-12-31": 898,
+   "2021-01-31": 899,
+   "2021-02-28": 907,
+   "2021-03-31": 921,
+   "2021-04-30": 938,
+   "2021-05-31": null,
+   "2021-06-30": 966,
+   "2021-07-31": 976,
+   "2021-08-31": 995,
+   "2021-09-30": 1014,
+   "2021-10-31": 1030,
+   "2021-11-30": 1031,
+   "2021-12-31": 1023,
+   "2022-01-31": 1019,
+   "2022-02-28": 1047,
+   "2022-03-31": 1063,
+   "2022-04-30": 1097,
+   "2022-05-31": 1113,
+   "2022-06-30": 1132,
+   "2022-07-31": 1139,
+   "2022-08-31": 1129,
+   "2022-09-30": 1121,
+   "2022-10-31": 1113,
+   "2022-11-30": 1118,
+   "2022-12-31": 1136,
+   "2023-01-31": 1139,
+   "2023-02-28": 1148,
+   "2023-03-31": 1158,
+   "2023-04-30": 1186,
+   "2023-05-31": 1207,
+   "2023-06-30": 1204,
+   "2023-07-31": 1204,
+   "2023-08-31": 1213,
+   "2023-09-30": 1222,
+   "2023-10-31": 1235,
+   "2023-11-30": 1226,
+   "2023-12-31": 1231,
+   "2024-01-31": 1230,
+   "2024-02-29": 1248,
+   "2024-03-31": 1248,
+   "2024-04-30": 1259,
+   "2024-05-31": 1256,
+   "2024-06-30": 1268,
+   "2024-07-31": 1276,
+   "2024-08-31": 1281,
+   "2024-09-30": 1278,
+   "2024-10-31": 1277,
+   "2024-11-30": 1282,
+   "2024-12-31": 1290,
+   "2025-01-31": 1286,
+   "2025-02-28": 1297,
+   "2025-03-31": 1316,
+   "2025-04-30": 1329,
+   "2025-05-31": 1332,
+   "2025-06-30": 1330,
+   "2025-07-31": 1328,
+   "2025-08-31": 1320,
+   "2025-09-30": 1325,
+   "2025-10-31": 1329,
+   "2025-11-30": 1341,
+   "2025-12-31": 1349
+ },
+ {
+   "RegionID": 394346,
+   "SizeRank": 217,
+   "RegionName": "Athens, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1322,
+   "2020-02-29": 1325,
+   "2020-03-31": 1317,
+   "2020-04-30": 1304,
+   "2020-05-31": 1305,
+   "2020-06-30": 1319,
+   "2020-07-31": 1346,
+   "2020-08-31": 1368,
+   "2020-09-30": 1388,
+   "2020-10-31": 1409,
+   "2020-11-30": 1415,
+   "2020-12-31": 1427,
+   "2021-01-31": 1426,
+   "2021-02-28": 1435,
+   "2021-03-31": 1441,
+   "2021-04-30": 1452,
+   "2021-05-31": 1466,
+   "2021-06-30": 1478,
+   "2021-07-31": 1508,
+   "2021-08-31": 1522,
+   "2021-09-30": 1551,
+   "2021-10-31": 1551,
+   "2021-11-30": 1573,
+   "2021-12-31": 1583,
+   "2022-01-31": 1601,
+   "2022-02-28": 1614,
+   "2022-03-31": 1613,
+   "2022-04-30": 1632,
+   "2022-05-31": 1660,
+   "2022-06-30": 1698,
+   "2022-07-31": 1722,
+   "2022-08-31": 1720,
+   "2022-09-30": 1730,
+   "2022-10-31": 1723,
+   "2022-11-30": 1730,
+   "2022-12-31": 1724,
+   "2023-01-31": 1747,
+   "2023-02-28": 1779,
+   "2023-03-31": 1812,
+   "2023-04-30": 1819,
+   "2023-05-31": 1812,
+   "2023-06-30": 1827,
+   "2023-07-31": 1851,
+   "2023-08-31": 1865,
+   "2023-09-30": 1869,
+   "2023-10-31": 1870,
+   "2023-11-30": 1888,
+   "2023-12-31": 1883,
+   "2024-01-31": 1875,
+   "2024-02-29": 1866,
+   "2024-03-31": 1888,
+   "2024-04-30": 1910,
+   "2024-05-31": 1927,
+   "2024-06-30": 1938,
+   "2024-07-31": 1947,
+   "2024-08-31": 1965,
+   "2024-09-30": 1973,
+   "2024-10-31": 1984,
+   "2024-11-30": 1980,
+   "2024-12-31": 1978,
+   "2025-01-31": 1974,
+   "2025-02-28": 1976,
+   "2025-03-31": 1957,
+   "2025-04-30": 1956,
+   "2025-05-31": 1957,
+   "2025-06-30": 1960,
+   "2025-07-31": 1964,
+   "2025-08-31": 1980,
+   "2025-09-30": 2022,
+   "2025-10-31": 2049,
+   "2025-11-30": 2068,
+   "2025-12-31": 2055
+ },
+ {
+   "RegionID": 394623,
+   "SizeRank": 226,
+   "RegionName": "Gainesville, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1448,
+   "2020-02-29": 1460,
+   "2020-03-31": 1461,
+   "2020-04-30": 1455,
+   "2020-05-31": 1455,
+   "2020-06-30": 1475,
+   "2020-07-31": 1481,
+   "2020-08-31": 1495,
+   "2020-09-30": 1513,
+   "2020-10-31": 1548,
+   "2020-11-30": 1564,
+   "2020-12-31": 1573,
+   "2021-01-31": 1587,
+   "2021-02-28": 1611,
+   "2021-03-31": 1600,
+   "2021-04-30": 1596,
+   "2021-05-31": 1620,
+   "2021-06-30": 1678,
+   "2021-07-31": 1732,
+   "2021-08-31": 1742,
+   "2021-09-30": 1746,
+   "2021-10-31": 1758,
+   "2021-11-30": 1753,
+   "2021-12-31": 1774,
+   "2022-01-31": 1788,
+   "2022-02-28": 1816,
+   "2022-03-31": 1832,
+   "2022-04-30": 1846,
+   "2022-05-31": 1885,
+   "2022-06-30": 1913,
+   "2022-07-31": 1938,
+   "2022-08-31": 1947,
+   "2022-09-30": 1941,
+   "2022-10-31": 1940,
+   "2022-11-30": 1954,
+   "2022-12-31": 1968,
+   "2023-01-31": 1988,
+   "2023-02-28": 1995,
+   "2023-03-31": 2014,
+   "2023-04-30": 2013,
+   "2023-05-31": 2024,
+   "2023-06-30": 2037,
+   "2023-07-31": 2043,
+   "2023-08-31": 2052,
+   "2023-09-30": 2040,
+   "2023-10-31": 2047,
+   "2023-11-30": 2023,
+   "2023-12-31": 2037,
+   "2024-01-31": 2034,
+   "2024-02-29": 2069,
+   "2024-03-31": 2081,
+   "2024-04-30": 2104,
+   "2024-05-31": 2095,
+   "2024-06-30": 2112,
+   "2024-07-31": 2119,
+   "2024-08-31": 2138,
+   "2024-09-30": 2123,
+   "2024-10-31": 2110,
+   "2024-11-30": 2092,
+   "2024-12-31": 2076,
+   "2025-01-31": 2100,
+   "2025-02-28": 2127,
+   "2025-03-31": 2174,
+   "2025-04-30": 2167,
+   "2025-05-31": 2176,
+   "2025-06-30": 2169,
+   "2025-07-31": 2187,
+   "2025-08-31": 2175,
+   "2025-09-30": 2166,
+   "2025-10-31": 2160,
+   "2025-11-30": 2156,
+   "2025-12-31": 2145
+ },
+ {
+   "RegionID": 395202,
+   "SizeRank": 234,
+   "RegionName": "Warner Robins, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 998,
+   "2020-02-29": 1009,
+   "2020-03-31": 1023,
+   "2020-04-30": 1030,
+   "2020-05-31": 1030,
+   "2020-06-30": 1032,
+   "2020-07-31": 1043,
+   "2020-08-31": 1054,
+   "2020-09-30": 1079,
+   "2020-10-31": 1091,
+   "2020-11-30": 1098,
+   "2020-12-31": 1086,
+   "2021-01-31": 1093,
+   "2021-02-28": 1105,
+   "2021-03-31": 1127,
+   "2021-04-30": 1137,
+   "2021-05-31": 1155,
+   "2021-06-30": 1157,
+   "2021-07-31": 1171,
+   "2021-08-31": 1182,
+   "2021-09-30": 1212,
+   "2021-10-31": 1240,
+   "2021-11-30": 1245,
+   "2021-12-31": 1251,
+   "2022-01-31": 1268,
+   "2022-02-28": 1290,
+   "2022-03-31": 1319,
+   "2022-04-30": 1325,
+   "2022-05-31": 1327,
+   "2022-06-30": 1327,
+   "2022-07-31": 1344,
+   "2022-08-31": 1375,
+   "2022-09-30": 1370,
+   "2022-10-31": 1373,
+   "2022-11-30": 1370,
+   "2022-12-31": 1387,
+   "2023-01-31": 1388,
+   "2023-02-28": 1392,
+   "2023-03-31": 1392,
+   "2023-04-30": 1405,
+   "2023-05-31": 1417,
+   "2023-06-30": 1440,
+   "2023-07-31": 1452,
+   "2023-08-31": 1458,
+   "2023-09-30": 1460,
+   "2023-10-31": 1457,
+   "2023-11-30": 1454,
+   "2023-12-31": 1441,
+   "2024-01-31": 1448,
+   "2024-02-29": 1450,
+   "2024-03-31": 1473,
+   "2024-04-30": 1476,
+   "2024-05-31": 1491,
+   "2024-06-30": 1490,
+   "2024-07-31": 1495,
+   "2024-08-31": 1508,
+   "2024-09-30": 1522,
+   "2024-10-31": 1528,
+   "2024-11-30": 1520,
+   "2024-12-31": 1513,
+   "2025-01-31": 1531,
+   "2025-02-28": 1531,
+   "2025-03-31": 1540,
+   "2025-04-30": 1533,
+   "2025-05-31": 1544,
+   "2025-06-30": 1556,
+   "2025-07-31": 1557,
+   "2025-08-31": 1564,
+   "2025-09-30": 1562,
+   "2025-10-31": 1578,
+   "2025-11-30": 1591,
+   "2025-12-31": 1611
+ },
+ {
+   "RegionID": 394306,
+   "SizeRank": 295,
+   "RegionName": "Albany, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 675,
+   "2020-02-29": 672,
+   "2020-03-31": 676,
+   "2020-04-30": 679,
+   "2020-05-31": 696,
+   "2020-06-30": 705,
+   "2020-07-31": 715,
+   "2020-08-31": 725,
+   "2020-09-30": 732,
+   "2020-10-31": 742,
+   "2020-11-30": 728,
+   "2020-12-31": 722,
+   "2021-01-31": 720,
+   "2021-02-28": 734,
+   "2021-03-31": 752,
+   "2021-04-30": 769,
+   "2021-05-31": 780,
+   "2021-06-30": 790,
+   "2021-07-31": 798,
+   "2021-08-31": 818,
+   "2021-09-30": 804,
+   "2021-10-31": 823,
+   "2021-11-30": 828,
+   "2021-12-31": 859,
+   "2022-01-31": 852,
+   "2022-02-28": 859,
+   "2022-03-31": 859,
+   "2022-04-30": 880,
+   "2022-05-31": 893,
+   "2022-06-30": 909,
+   "2022-07-31": 907,
+   "2022-08-31": 912,
+   "2022-09-30": 913,
+   "2022-10-31": 919,
+   "2022-11-30": 913,
+   "2022-12-31": 906,
+   "2023-01-31": 901,
+   "2023-02-28": 900,
+   "2023-03-31": 908,
+   "2023-04-30": 911,
+   "2023-05-31": 918,
+   "2023-06-30": 926,
+   "2023-07-31": 926,
+   "2023-08-31": 939,
+   "2023-09-30": 946,
+   "2023-10-31": 957,
+   "2023-11-30": 963,
+   "2023-12-31": 962,
+   "2024-01-31": 970,
+   "2024-02-29": 964,
+   "2024-03-31": 970,
+   "2024-04-30": 975,
+   "2024-05-31": 983,
+   "2024-06-30": 989,
+   "2024-07-31": 992,
+   "2024-08-31": 1005,
+   "2024-09-30": 1002,
+   "2024-10-31": 1004,
+   "2024-11-30": 990,
+   "2024-12-31": 984,
+   "2025-01-31": 985,
+   "2025-02-28": 991,
+   "2025-03-31": 1009,
+   "2025-04-30": 1033,
+   "2025-05-31": 1040,
+   "2025-06-30": 1047,
+   "2025-07-31": 1033,
+   "2025-08-31": 1036,
+   "2025-09-30": 1018,
+   "2025-10-31": 1028,
+   "2025-11-30": 1038,
+   "2025-12-31": 1063
+ },
+ {
+   "RegionID": 395182,
+   "SizeRank": 300,
+   "RegionName": "Valdosta, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": 1179,
+   "2022-07-31": 1208,
+   "2022-08-31": 1238,
+   "2022-09-30": 1215,
+   "2022-10-31": 1184,
+   "2022-11-30": 1211,
+   "2022-12-31": 1243,
+   "2023-01-31": 1243,
+   "2023-02-28": 1234,
+   "2023-03-31": 1256,
+   "2023-04-30": 1303,
+   "2023-05-31": 1336,
+   "2023-06-30": 1314,
+   "2023-07-31": 1300,
+   "2023-08-31": 1280,
+   "2023-09-30": 1298,
+   "2023-10-31": 1323,
+   "2023-11-30": 1325,
+   "2023-12-31": 1333,
+   "2024-01-31": 1337,
+   "2024-02-29": 1351,
+   "2024-03-31": 1343,
+   "2024-04-30": 1353,
+   "2024-05-31": 1360,
+   "2024-06-30": 1370,
+   "2024-07-31": 1366,
+   "2024-08-31": 1367,
+   "2024-09-30": 1372,
+   "2024-10-31": 1396,
+   "2024-11-30": 1398,
+   "2024-12-31": 1419,
+   "2025-01-31": 1417,
+   "2025-02-28": 1430,
+   "2025-03-31": 1418,
+   "2025-04-30": 1431,
+   "2025-05-31": 1449,
+   "2025-06-30": 1458,
+   "2025-07-31": 1448,
+   "2025-08-31": 1446,
+   "2025-09-30": 1471,
+   "2025-10-31": 1492,
+   "2025-11-30": 1491,
+   "2025-12-31": 1490
+ },
+ {
+   "RegionID": 394515,
+   "SizeRank": 305,
+   "RegionName": "Dalton, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": null,
+   "2024-06-30": null,
+   "2024-07-31": null,
+   "2024-08-31": null,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": null,
+   "2024-12-31": null,
+   "2025-01-31": null,
+   "2025-02-28": null,
+   "2025-03-31": null,
+   "2025-04-30": null,
+   "2025-05-31": null,
+   "2025-06-30": null,
+   "2025-07-31": null,
+   "2025-08-31": null,
+   "2025-09-30": 1666,
+   "2025-10-31": 1665,
+   "2025-11-30": 1686,
+   "2025-12-31": 1713
+ },
+ {
+   "RegionID": 394423,
+   "SizeRank": 360,
+   "RegionName": "Brunswick, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": 1722,
+   "2022-10-31": 1726,
+   "2022-11-30": 1763,
+   "2022-12-31": 1781,
+   "2023-01-31": 1747,
+   "2023-02-28": 1756,
+   "2023-03-31": 1766,
+   "2023-04-30": 1792,
+   "2023-05-31": 1793,
+   "2023-06-30": 1815,
+   "2023-07-31": 1843,
+   "2023-08-31": 1883,
+   "2023-09-30": 1880,
+   "2023-10-31": 1878,
+   "2023-11-30": 1853,
+   "2023-12-31": 1847,
+   "2024-01-31": 1848,
+   "2024-02-29": 1830,
+   "2024-03-31": 1857,
+   "2024-04-30": 1860,
+   "2024-05-31": 1897,
+   "2024-06-30": 1881,
+   "2024-07-31": 1857,
+   "2024-08-31": 1863,
+   "2024-09-30": 1856,
+   "2024-10-31": 1875,
+   "2024-11-30": 1870,
+   "2024-12-31": 1845,
+   "2025-01-31": 1859,
+   "2025-02-28": 1882,
+   "2025-03-31": 1936,
+   "2025-04-30": 1958,
+   "2025-05-31": 1954,
+   "2025-06-30": 1949,
+   "2025-07-31": 1941,
+   "2025-08-31": 1965,
+   "2025-09-30": 1951,
+   "2025-10-31": 1948,
+   "2025-11-30": 1918,
+   "2025-12-31": 1925
+ },
+ {
+   "RegionID": 394762,
+   "SizeRank": 379,
+   "RegionName": "LaGrange, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": 1068,
+   "2023-06-30": 1070,
+   "2023-07-31": 1058,
+   "2023-08-31": 1063,
+   "2023-09-30": 1057,
+   "2023-10-31": 1078,
+   "2023-11-30": 1085,
+   "2023-12-31": 1084,
+   "2024-01-31": 1079,
+   "2024-02-29": 1094,
+   "2024-03-31": 1161,
+   "2024-04-30": 1204,
+   "2024-05-31": 1209,
+   "2024-06-30": 1164,
+   "2024-07-31": 1121,
+   "2024-08-31": 1106,
+   "2024-09-30": 1083,
+   "2024-10-31": 1084,
+   "2024-11-30": 1109,
+   "2024-12-31": 1193,
+   "2025-01-31": 1204,
+   "2025-02-28": 1252,
+   "2025-03-31": 1247,
+   "2025-04-30": 1357,
+   "2025-05-31": 1343,
+   "2025-06-30": 1349,
+   "2025-07-31": 1288,
+   "2025-08-31": 1263,
+   "2025-09-30": 1249,
+   "2025-10-31": 1228,
+   "2025-11-30": 1277,
+   "2025-12-31": 1274
+ },
+ {
+   "RegionID": 395038,
+   "SizeRank": 401,
+   "RegionName": "Rome, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": 1240,
+   "2023-06-30": 1228,
+   "2023-07-31": 1253,
+   "2023-08-31": 1288,
+   "2023-09-30": 1309,
+   "2023-10-31": 1274,
+   "2023-11-30": 1250,
+   "2023-12-31": 1230,
+   "2024-01-31": 1216,
+   "2024-02-29": 1221,
+   "2024-03-31": 1224,
+   "2024-04-30": 1271,
+   "2024-05-31": 1286,
+   "2024-06-30": 1309,
+   "2024-07-31": 1325,
+   "2024-08-31": 1319,
+   "2024-09-30": 1320,
+   "2024-10-31": 1311,
+   "2024-11-30": 1331,
+   "2024-12-31": 1351,
+   "2025-01-31": 1337,
+   "2025-02-28": 1325,
+   "2025-03-31": 1283,
+   "2025-04-30": 1301,
+   "2025-05-31": 1294,
+   "2025-06-30": 1371,
+   "2025-07-31": 1387,
+   "2025-08-31": 1454,
+   "2025-09-30": 1417,
+   "2025-10-31": 1412,
+   "2025-11-30": 1380,
+   "2025-12-31": 1376
+ },
+ {
+   "RegionID": 394682,
+   "SizeRank": 449,
+   "RegionName": "Hinesville, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": 1055,
+   "2020-02-29": 1064,
+   "2020-03-31": 1080,
+   "2020-04-30": 1089,
+   "2020-05-31": 1092,
+   "2020-06-30": 1084,
+   "2020-07-31": 1100,
+   "2020-08-31": 1118,
+   "2020-09-30": 1144,
+   "2020-10-31": 1151,
+   "2020-11-30": 1147,
+   "2020-12-31": 1145,
+   "2021-01-31": 1148,
+   "2021-02-28": 1183,
+   "2021-03-31": 1192,
+   "2021-04-30": 1208,
+   "2021-05-31": 1225,
+   "2021-06-30": 1269,
+   "2021-07-31": 1315,
+   "2021-08-31": 1342,
+   "2021-09-30": 1379,
+   "2021-10-31": 1384,
+   "2021-11-30": 1421,
+   "2021-12-31": 1433,
+   "2022-01-31": 1457,
+   "2022-02-28": 1476,
+   "2022-03-31": 1460,
+   "2022-04-30": 1490,
+   "2022-05-31": 1488,
+   "2022-06-30": 1534,
+   "2022-07-31": 1532,
+   "2022-08-31": 1549,
+   "2022-09-30": 1561,
+   "2022-10-31": 1580,
+   "2022-11-30": 1577,
+   "2022-12-31": 1586,
+   "2023-01-31": 1604,
+   "2023-02-28": 1611,
+   "2023-03-31": 1603,
+   "2023-04-30": 1604,
+   "2023-05-31": 1613,
+   "2023-06-30": 1619,
+   "2023-07-31": 1594,
+   "2023-08-31": 1573,
+   "2023-09-30": 1583,
+   "2023-10-31": 1591,
+   "2023-11-30": 1611,
+   "2023-12-31": 1621,
+   "2024-01-31": 1633,
+   "2024-02-29": 1631,
+   "2024-03-31": 1631,
+   "2024-04-30": 1649,
+   "2024-05-31": 1670,
+   "2024-06-30": 1697,
+   "2024-07-31": 1712,
+   "2024-08-31": 1716,
+   "2024-09-30": 1702,
+   "2024-10-31": 1701,
+   "2024-11-30": 1722,
+   "2024-12-31": 1733,
+   "2025-01-31": 1749,
+   "2025-02-28": 1745,
+   "2025-03-31": 1750,
+   "2025-04-30": 1746,
+   "2025-05-31": 1751,
+   "2025-06-30": 1745,
+   "2025-07-31": 1734,
+   "2025-08-31": 1731,
+   "2025-09-30": 1744,
+   "2025-10-31": 1758,
+   "2025-11-30": 1762,
+   "2025-12-31": 1755
+ },
+ {
+   "RegionID": 395126,
+   "SizeRank": 453,
+   "RegionName": "Statesboro, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": 1441,
+   "2022-11-30": 1456,
+   "2022-12-31": 1468,
+   "2023-01-31": 1498,
+   "2023-02-28": 1498,
+   "2023-03-31": 1503,
+   "2023-04-30": 1506,
+   "2023-05-31": 1506,
+   "2023-06-30": 1509,
+   "2023-07-31": 1535,
+   "2023-08-31": 1551,
+   "2023-09-30": 1564,
+   "2023-10-31": 1543,
+   "2023-11-30": 1572,
+   "2023-12-31": 1599,
+   "2024-01-31": 1615,
+   "2024-02-29": 1621,
+   "2024-03-31": 1614,
+   "2024-04-30": 1644,
+   "2024-05-31": 1660,
+   "2024-06-30": 1682,
+   "2024-07-31": 1684,
+   "2024-08-31": 1674,
+   "2024-09-30": 1680,
+   "2024-10-31": 1673,
+   "2024-11-30": 1665,
+   "2024-12-31": 1693,
+   "2025-01-31": 1712,
+   "2025-02-28": 1755,
+   "2025-03-31": 1760,
+   "2025-04-30": 1764,
+   "2025-05-31": 1746,
+   "2025-06-30": 1717,
+   "2025-07-31": 1741,
+   "2025-08-31": 1789,
+   "2025-09-30": 1821,
+   "2025-10-31": 1801,
+   "2025-11-30": 1764,
+   "2025-12-31": 1774
+ },
+ {
+   "RegionID": 753893,
+   "SizeRank": 477,
+   "RegionName": "Jefferson, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": 2130,
+   "2023-02-28": 2139,
+   "2023-03-31": 2121,
+   "2023-04-30": 2106,
+   "2023-05-31": 2095,
+   "2023-06-30": 2105,
+   "2023-07-31": 2123,
+   "2023-08-31": 2114,
+   "2023-09-30": 2100,
+   "2023-10-31": 2081,
+   "2023-11-30": 2078,
+   "2023-12-31": 2096,
+   "2024-01-31": 2129,
+   "2024-02-29": 2173,
+   "2024-03-31": 2211,
+   "2024-04-30": 2219,
+   "2024-05-31": 2206,
+   "2024-06-30": 2179,
+   "2024-07-31": 2185,
+   "2024-08-31": 2184,
+   "2024-09-30": 2193,
+   "2024-10-31": 2174,
+   "2024-11-30": 2183,
+   "2024-12-31": 2194,
+   "2025-01-31": 2208,
+   "2025-02-28": 2234,
+   "2025-03-31": 2242,
+   "2025-04-30": 2250,
+   "2025-05-31": 2189,
+   "2025-06-30": 2182,
+   "2025-07-31": 2194,
+   "2025-08-31": 2241,
+   "2025-09-30": 2254,
+   "2025-10-31": 2253,
+   "2025-11-30": 2260,
+   "2025-12-31": 2249
+ },
+ {
+   "RegionID": 394540,
+   "SizeRank": 511,
+   "RegionName": "Dublin, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": null,
+   "2024-06-30": null,
+   "2024-07-31": null,
+   "2024-08-31": null,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": null,
+   "2024-12-31": null,
+   "2025-01-31": null,
+   "2025-02-28": null,
+   "2025-03-31": null,
+   "2025-04-30": null,
+   "2025-05-31": 1367,
+   "2025-06-30": 1400,
+   "2025-07-31": 1455,
+   "2025-08-31": 1480,
+   "2025-09-30": 1414,
+   "2025-10-31": 1378,
+   "2025-11-30": 1402,
+   "2025-12-31": 1438
+ },
+ {
+   "RegionID": 395122,
+   "SizeRank": 576,
+   "RegionName": "St. Marys, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": 1391,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": 1551,
+   "2022-08-31": 1546,
+   "2022-09-30": 1579,
+   "2022-10-31": 1611,
+   "2022-11-30": 1603,
+   "2022-12-31": 1618,
+   "2023-01-31": 1629,
+   "2023-02-28": 1651,
+   "2023-03-31": 1672,
+   "2023-04-30": 1699,
+   "2023-05-31": 1734,
+   "2023-06-30": 1701,
+   "2023-07-31": 1684,
+   "2023-08-31": 1672,
+   "2023-09-30": 1655,
+   "2023-10-31": 1664,
+   "2023-11-30": 1670,
+   "2023-12-31": 1696,
+   "2024-01-31": 1710,
+   "2024-02-29": 1700,
+   "2024-03-31": 1740,
+   "2024-04-30": 1737,
+   "2024-05-31": 1771,
+   "2024-06-30": 1772,
+   "2024-07-31": 1785,
+   "2024-08-31": 1760,
+   "2024-09-30": 1743,
+   "2024-10-31": 1744,
+   "2024-11-30": 1769,
+   "2024-12-31": 1778,
+   "2025-01-31": 1763,
+   "2025-02-28": 1810,
+   "2025-03-31": 1829,
+   "2025-04-30": 1872,
+   "2025-05-31": 1818,
+   "2025-06-30": 1830,
+   "2025-07-31": 1816,
+   "2025-08-31": 1811,
+   "2025-09-30": 1835,
+   "2025-10-31": 1863,
+   "2025-11-30": 1874,
+   "2025-12-31": 1849
+ },
+ {
+   "RegionID": 394861,
+   "SizeRank": 588,
+   "RegionName": "Milledgeville, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": null,
+   "2024-06-30": null,
+   "2024-07-31": null,
+   "2024-08-31": null,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": null,
+   "2024-12-31": 1149,
+   "2025-01-31": 1124,
+   "2025-02-28": 1146,
+   "2025-03-31": 1145,
+   "2025-04-30": 1189,
+   "2025-05-31": 1183,
+   "2025-06-30": 1207,
+   "2025-07-31": 1207,
+   "2025-08-31": 1236,
+   "2025-09-30": 1287,
+   "2025-10-31": 1268,
+   "2025-11-30": 1237,
+   "2025-12-31": 1202
+ },
+ {
+   "RegionID": 394500,
+   "SizeRank": 644,
+   "RegionName": "Cornelia, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": null,
+   "2024-06-30": null,
+   "2024-07-31": null,
+   "2024-08-31": null,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": null,
+   "2024-12-31": null,
+   "2025-01-31": null,
+   "2025-02-28": null,
+   "2025-03-31": null,
+   "2025-04-30": null,
+   "2025-05-31": null,
+   "2025-06-30": null,
+   "2025-07-31": null,
+   "2025-08-31": null,
+   "2025-09-30": null,
+   "2025-10-31": null,
+   "2025-11-30": null,
+   "2025-12-31": 1763
+ },
+ {
+   "RegionID": 395155,
+   "SizeRank": 646,
+   "RegionName": "Thomasville, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": 1459,
+   "2024-06-30": 1471,
+   "2024-07-31": 1453,
+   "2024-08-31": 1470,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": 1460,
+   "2024-12-31": 1471,
+   "2025-01-31": 1450,
+   "2025-02-28": 1469,
+   "2025-03-31": null,
+   "2025-04-30": null,
+   "2025-05-31": 1506,
+   "2025-06-30": 1498,
+   "2025-07-31": 1529,
+   "2025-08-31": 1573,
+   "2025-09-30": 1555,
+   "2025-10-31": 1530,
+   "2025-11-30": 1517,
+   "2025-12-31": 1535
+ },
+ {
+   "RegionID": 395158,
+   "SizeRank": 688,
+   "RegionName": "Tifton, GA",
+   "RegionType": "msa",
+   "StateName": 0,
+   "2020-01-31": null,
+   "2020-02-29": null,
+   "2020-03-31": null,
+   "2020-04-30": null,
+   "2020-05-31": null,
+   "2020-06-30": null,
+   "2020-07-31": null,
+   "2020-08-31": null,
+   "2020-09-30": null,
+   "2020-10-31": null,
+   "2020-11-30": null,
+   "2020-12-31": null,
+   "2021-01-31": null,
+   "2021-02-28": null,
+   "2021-03-31": null,
+   "2021-04-30": null,
+   "2021-05-31": null,
+   "2021-06-30": null,
+   "2021-07-31": null,
+   "2021-08-31": null,
+   "2021-09-30": null,
+   "2021-10-31": null,
+   "2021-11-30": null,
+   "2021-12-31": null,
+   "2022-01-31": null,
+   "2022-02-28": null,
+   "2022-03-31": null,
+   "2022-04-30": null,
+   "2022-05-31": null,
+   "2022-06-30": null,
+   "2022-07-31": null,
+   "2022-08-31": null,
+   "2022-09-30": null,
+   "2022-10-31": null,
+   "2022-11-30": null,
+   "2022-12-31": null,
+   "2023-01-31": null,
+   "2023-02-28": null,
+   "2023-03-31": null,
+   "2023-04-30": null,
+   "2023-05-31": null,
+   "2023-06-30": null,
+   "2023-07-31": null,
+   "2023-08-31": null,
+   "2023-09-30": null,
+   "2023-10-31": null,
+   "2023-11-30": null,
+   "2023-12-31": null,
+   "2024-01-31": null,
+   "2024-02-29": null,
+   "2024-03-31": null,
+   "2024-04-30": null,
+   "2024-05-31": null,
+   "2024-06-30": null,
+   "2024-07-31": null,
+   "2024-08-31": null,
+   "2024-09-30": null,
+   "2024-10-31": null,
+   "2024-11-30": null,
+   "2024-12-31": null,
+   "2025-01-31": null,
+   "2025-02-28": null,
+   "2025-03-31": null,
+   "2025-04-30": null,
+   "2025-05-31": null,
+   "2025-06-30": null,
+   "2025-07-31": null,
+   "2025-08-31": null,
+   "2025-09-30": null,
+   "2025-10-31": null,
+   "2025-11-30": null,
+   "2025-12-31": 1593
+ }
+]
