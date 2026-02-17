@@ -19,3 +19,7 @@ The goal is to examine how housing prices have changed since 2020 across differe
 
 ## Results
 Key findings include trends in rising home prices and differences in affordability across demographics.
+
+## Project Website
+
+[View the analysis](https://lpenavarela1.github.io/HousingData/Assignment3.html)
