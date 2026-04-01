@@ -28,18 +28,18 @@ d3.csv("https://raw.githubusercontent.com/lpenavarela1/HousingData/refs/heads/ma
         .attr("fill", "orange");
 
     svg.selectAll("text")
-      .data(data.slice(0, 10))
-      .enter()
-      .append("text")
-      .attr("x", (d, i) => i * 100 + 30)
-      .attr("y", 480)
-      .text(d => d.RegionName)
-      .attr("font-size", "10px")
+        .data(data.slice(0, 10))
+        .enter()
+        .append("text")
+        .attr("x", (d, i) => i * 100 + 30)
+        .attr("y", 480)
+        .text(d => d.RegionName)
+        .attr("font-size", "10px")
 
-      .transition()
-      .duration(2000)
-      .attr("y", 450)
-      .attr("fill", "blue");
+        .transition()
+        .duration(2000)
+        .attr("fill", "blue")
+        .attr("y", 450);
   
     svg.selectAll("rect")
         .data(data.slice(0, 10))
@@ -55,12 +55,4 @@ d3.csv("https://raw.githubusercontent.com/lpenavarela1/HousingData/refs/heads/ma
         .duration(2000)
         .attr("height", d => scale(d.value2))
         .attr("fill", "pink");
-  
-  svg.selectAll("circle")
-  .on("mouseover", function () {
-    d3.select(this).attr("fill", "red");
-  })
-  .on("mouseout", function () {
-    d3.select(this).attr("fill", "orange");
-  });
 });
